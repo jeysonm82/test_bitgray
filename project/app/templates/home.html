@@ -1,0 +1,94 @@
+{%extends "base_layout.html"%}
+{%block content%}
+<div class='container'>
+    <h1>Practical Test - Jeyson Molina</h1>
+    <ol>
+        
+        <li>
+        <p></p>
+        </li>
+        <li>
+        <p></p>
+        </li>
+        <li>
+        <p></p>
+        </li>
+        <li>
+        <p></p>
+        </li>
+        <li>
+        <p></p>
+        </li>
+        <li>
+        <p></p>
+        </li>
+        <li>
+        <p>Bajo la estructura de negocio actual, ¿Que propondría usted para realizar una
+numeración en la facturación, sin afectar o crear nuevos campos?</p>
+        <p>
+        <code>
+            CODIGO = [fechaAño+fechaMes+fechaDia+fechaHora+fechaMinuto+fechaSegundo+id_sede+id_producto+id_cliente]
+        </code><br/>
+            Ej: 
+            fecha: 2015,01,01,12,00<br/>
+            id_sede: 1<br/>
+            id_produdcto: 2<br/>
+            id_cliente: 3<br/>
+
+            Codigo: 201501011200123
+            </p>
+        </li>
+        <li>
+        <p>Plantear herramientas y tecnologías necesarias para su publicación, seguridad y
+mantenimiento de esta aplicación, bajo el supuesto de una concurrencia diaria de
+500.000 a 1.000.000 usuarios.</p>
+        <b>Publicación</b>
+        <ul>
+            <li>Caching: Mecanismos para el cacheo de respuestas del servidor para reducir el uso de peticiones a la BD y costo de procesamiento en general en el servidor. Tecnologías: django cache framework, redis y/o memcached para cachear en la memoria RAM del servidor para disminuir el tiempo de respuesta.</li>
+            <li>
+            Mover contenidos estaticos a hardware/infraestructuras dedicadas a estos. Tecnologías: Amazon S3, Cloudflare.
+            </li>
+            <li>
+            Optimización de queries a la BD, estrategias de indexación en las tablas según el tipo de consulta (Ej: indexación de clientes.documento para la búsqueda de factura por documento).
+            </li>
+            <li>
+            Despliegue en instancias elásticas Amazon EC2, uso de servidor Nginx + UWSGI + docker    
+            </li>
+        </ul>
+        <b>Mantenimiento</b>
+        <ul>
+            <li>Manejo de versiones (GIT), manejo de branches separados para desarrollo y para corrección de errores (hotfixes)</li>
+            <li>Mecanismos de automatización de despliegue de cambios en el codebase (Fabric)</li>
+            <li>Manejo de al menos dos instancias de la solución para mantener el uptime del servicio al 100% mientras se actualizan las instancias.</li>
+            <li>Implementar logs de todos los servicios/aplicaciones en el servidor para efectos de debug y propuesta de soluciones</li>
+        </ul>
+
+        <b>Seguridad</b>
+        <ul>
+            <li>Sistema de logging en la bd de todas las transacciones realizadas</li>
+            <li>Replicación y/o backup incremental de la base de datos de forma periódica.</li>
+            <li>Almacenamiento de las claves/contraseñas en el sistema keyring del servidor</li>
+            <li>Protección del servidor, sistema de permisos adecuado, deshabilitar logueo SSH por contraseña, deshabilitar logueo root. Sistemas auditores de autenticación (ej: fail2ban)</li>
+            <li>Fragmentación del stack (Servidor http, BD, app) en varios contenedores docker </li>
+            <li>Implementar capa de cifrado SSL (HTTPS)</li>
+            <li>Mecanismos de seguridad contra DDOS</li>
+            </ul>
+        </li>
+
+        <li>
+        <p>Crear un plan de escabilidad al momento de tener un alto volumen de datos,
+escrituras y lecturas en disco</p>
+
+        <ul>
+            <li>Habilitar todos los sistemas de caching que se tengan disponibles</li>
+            <li>Escalamiento vertical del servidor. Aumentar su capacidad de memoria y procesamiento</li>
+            <li>Escalamiento horizontal. Clonar instancias y utilizar una aproximación de balanceo de carga para dividir el esfuerzo entre los servidores.</li>
+        </ul>
+        </li>
+
+        <li>
+        <p></p>
+        </li>
+</ol>
+</div>
+{%endblock%}

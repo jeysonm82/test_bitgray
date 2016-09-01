@@ -17,9 +17,11 @@ from django.conf.urls import url
 from django.contrib import admin
 from app.views import APIListCreate, ComprasView, FacturaView
 from app.models import Clientes, Compras, Productos, Sedes
+from django.views.generic import TemplateView
 
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
+    url(r'^$', TemplateView.as_view(template_name='home.html')),
     url(r'^api/clientes/$', APIListCreate.as_view(model=Clientes)),
     url(r'^api/clientes/(?P<pk>[0-9]{1,10})$', APIListCreate.as_view(model=Clientes) ),
     url(r'^api/compras/$', APIListCreate.as_view(model=Compras)),
