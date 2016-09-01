@@ -57,7 +57,7 @@ class Compras(models.Model):
     fecha = models.DateTimeField(auto_now=True)
 
     def __unicode__(self):
-        return "%s. %s - $%s" % (self.pk, self.producto, self.cliente)
+        return "%s - %s, $%s. Sede: %s" % (self.producto.producto, self.cliente, self.precio, self.sede)
 
     class Meta:
         managed = False
