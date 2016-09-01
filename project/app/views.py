@@ -12,7 +12,6 @@ from django.forms import modelformset_factory
 from django.contrib import messages
 
 
-
 class APIListCreate(View):
     model = None
 
@@ -67,19 +66,14 @@ class APIListCreate(View):
         return self._json_response(data)
 
 
-
-class FormCompra(forms.ModelForm):
-    class Meta:
-        model = Compras
-        fields = ('producto',)
-
 class ComprasView(FormView):
     template_name = 'compras.html'
-    form_class = modelformset_factory(Compras, fields=('producto', 'sede', 'precio'),min_num=0, extra=0)
-    success_url='/compras'
+    form_class = modelformset_factory(
+        Compras, fields=('producto', 'sede', 'precio'), min_num=0, extra=0)
+    success_url = '/compras'
 
     def get_form(self):
-        data = self.request.POST if self.request.method =='POST' else None
+        data = self.request.POST if self.request.method == 'POST' else None
         return self.form_class(data, queryset=Compras.objects.none())
 
     def form_valid(self, form):
@@ -91,12 +85,12 @@ class ComprasView(FormView):
             i.cliente = client
             i.save()
 
-        messages.add_message(self.request, messages.SUCCESS,"Se han agregado las siguientes compras <ul>%s</ul>"%(
-            ''.join(["<li>%s</li>"%(i) for i in instances])))
+        messages.add_message(self.request, messages.SUCCESS, "Se han agregado las siguientes compras <ul>%s</ul>" % (
+            ''.join(["<li>%s</li>" % (i) for i in instances])))
         return super(ComprasView, self).form_valid(form)
 
     def get_context_data(self, **kwargs):
-        context= super(ComprasView, self).get_context_data(**kwargs)
+        context = super(ComprasView, self).get_context_data(**kwargs)
         context['products'] = Productos.objects.all()
         context['sedes'] = Sedes.objects.all()
         context['clientes'] = Clientes.objects.all()
