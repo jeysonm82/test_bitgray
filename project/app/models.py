@@ -54,7 +54,7 @@ class Compras(models.Model):
     sede = models.ForeignKey(Sedes, db_column='id_sede', null=True, blank=True)
     precio = models.PositiveIntegerField()
     descripcion = models.TextField(null=True, blank=True)
-    fecha = models.DateTimeField()
+    fecha = models.DateTimeField(auto_now=True)
 
     def __unicode__(self):
         return "%s. %s - $%s" % (self.pk, self.producto, self.cliente)
