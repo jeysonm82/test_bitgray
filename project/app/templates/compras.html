@@ -1,0 +1,102 @@
+{%extends "base_layout.html"%}
+
+{%block content%}
+<div class='container'>
+    <h1>4. Compras</h1>
+
+    {% if messages %}
+        <ul class="messages">
+            {% for message in messages %}
+                <li{% if message.tags %} class="alert-{{ message.tags }}"{% endif %}>{{ message|safe }}</li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+
+    <div class='row compras-list'>
+
+        <div class='col-md-12'>
+            <h2>Listado de productos</h2>
+        </div>
+        {%for p in products%}
+            <div class='col-md-3'>
+                <div>
+                    <h2>{{p.producto}}</h2>
+                    <b>Precio:</b> {{p.precio}}<br/>
+                    <b>Descripción:</b> {{p.descripcion}}<br/>
+                    <button data-prod='{{p.producto}}' data-pk='{{p.pk}}' data-price='{{p.precio}}' type='button' class='btn btn-primary btn-add'>Agregar</button>
+                </div>
+            </div>
+        {%endfor%}
+    </div>
+    <!--Begin Form-->
+    <div class='row'>
+        <div class='col-md-12'>
+            <h2>Mis compras</h2>
+            <form method='POST'>
+                {%include "client_input.html"%} 
+                {{ form.management_form }}
+                {%csrf_token%}
+                <table class="table table--striped">
+                    <thead>
+                        <tr>
+                            <th>Producto</th>
+                            <th>Precio</th>
+                            <th>Sede</th>
+                        </tr>
+                    </thead>
+                    <tbody id='forms'>
+                    {%for f in form%}
+                        <tr>
+                            <td>{{f.producto}} {{f.producto.errors}}</td>    
+                            <td>{{f.precio}} {{f.precio.errors}}</td>    
+                            <td>{{f.sede}}</td>    
+                        </tr>
+                    {%endfor%}
+                    </tbody>
+                </table>
+                <button class='btn btn-primary'>Comprar productos</button>
+            </form>
+        </div>
+    </div>
+    <!--End Form-->
+</div>
+{%endblock%}
+
+
+{%block body_scripts%}
+    {{block.super}}
+    <script>
+        var sede_input = "{%spaceless%}{%include 'sede_input.html'%}{%endspaceless%}";
+        $(document).ready(
+            function(){
+                $('.btn-add').click(
+                    function(){
+                        /*Adds a product to the compras form*/
+                        var prod = $(this).attr("data-prod");;
+                        var prod_pk = $(this).attr("data-pk");
+                        var prod_price = $(this).attr("data-price");
+                        var numforms = $("#forms tr").length;
+                        var frm_prefix = "form-"+numforms+"-";
+
+                        $("#forms").append("<tr><td><input type='hidden' name='"+
+                                frm_prefix+"producto' value='"+prod_pk+"'/>"+
+                                prod +  "</td>"+
+                                "<td><input type='number'  min='0' name='" +
+                                frm_prefix+"precio' value='"+
+                                prod_price+"' /></td>"+
+                                "<td>"+sede_input+"</td></tr>");
+
+                        var c = $("#forms tr").last();
+                        
+                        c.hide();
+                        $("select", c).attr("name", frm_prefix+"sede");
+
+                        c.show(500);
+                        //Update total forms count
+                        $("#id_form-TOTAL_FORMS").attr("value", numforms+1);
+                    }
+                );
+            }
+        );
+    </script>
+{%endblock%}

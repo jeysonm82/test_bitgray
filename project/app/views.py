@@ -1,11 +1,16 @@
 from django.shortcuts import render
-from django.views.generic import View
+from django.views.generic import View, TemplateView, FormView
 from django.http import HttpResponse
 from django.core import serializers
 from django.http import Http404
 from django.views.decorators.csrf import csrf_exempt
 from django.utils.decorators import method_decorator
 from django.db import models
+from models import Productos, Compras, Sedes, Clientes
+from django import forms
+from django.forms import modelformset_factory
+from django.contrib import messages
+
 
 
 class APIListCreate(View):
@@ -51,7 +56,7 @@ class APIListCreate(View):
             attr = model._meta.get_field(k)
 
             # If field is a foreignkey we need to get the related model
-            # instance
+            # instance first.
             if isinstance(attr, models.ForeignKey):
                 foreign_model = attr.rel.to  # Model class
                 v = foreign_model.objects.get(pk=v)
@@ -60,3 +65,39 @@ class APIListCreate(View):
 
         data = self._to_json([instance])
         return self._json_response(data)
+
+
+
+class FormCompra(forms.ModelForm):
+    class Meta:
+        model = Compras
+        fields = ('producto',)
+
+class ComprasView(FormView):
+    template_name = 'compras.html'
+    form_class = modelformset_factory(Compras, fields=('producto', 'sede', 'precio'),min_num=0, extra=0)
+    success_url='/compras'
+
+    def get_form(self):
+        data = self.request.POST if self.request.method =='POST' else None
+        return self.form_class(data, queryset=Compras.objects.none())
+
+    def form_valid(self, form):
+        # Set client from cliente input to all instances.
+        client = Clientes.objects.get(pk=self.request.POST['cliente'])
+
+        instances = form.save()
+        for i in instances:
+            i.cliente = client
+            i.save()
+
+        messages.add_message(self.request, messages.SUCCESS,"Se han agregado las siguientes compras <ul>%s</ul>"%(
+            ''.join(["<li>%s</li>"%(i) for i in instances])))
+        return super(ComprasView, self).form_valid(form)
+
+    def get_context_data(self, **kwargs):
+        context= super(ComprasView, self).get_context_data(**kwargs)
+        context['products'] = Productos.objects.all()
+        context['sedes'] = Sedes.objects.all()
+        context['clientes'] = Clientes.objects.all()
+        return context

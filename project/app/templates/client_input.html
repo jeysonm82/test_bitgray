@@ -1,0 +1,5 @@
+Cliente: <select name='cliente'>
+    {%for client in clientes%}
+        <option value='{{client.pk}}'>{{client.nombres}}</option>
+    {%endfor%}
+</select>
