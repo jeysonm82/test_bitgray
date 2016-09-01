@@ -95,3 +95,40 @@ class ComprasView(FormView):
         context['sedes'] = Sedes.objects.all()
         context['clientes'] = Clientes.objects.all()
         return context
+
+
+
+class FacturaForm(forms.Form):
+    cedula = forms.CharField(max_length=15)
+
+class FacturaView(FormView):
+    template_name = 'factura.html'
+    form_class = FacturaForm
+    success_url = '/facturas'
+    results, total, client = None, None, None
+
+    def form_valid(self, form):
+        self.results = Compras.objects.filter(cliente__documento=form.cleaned_data['cedula'])
+        self.total = sum([x.get_precio() for x in self.results])
+        self.client = self.results[0].cliente if self.results and len(self.results) else None
+
+        if not len(self.results):
+            messages.add_message(self.request, messages.SUCCESS, "No hay resultados")
+
+        # We do not redirect here. Instead we use the current request.
+        if 'json' in self.request.GET:
+            data = serializers.serialize('json', self.results)
+            doc = self.client.documento if self.client else None
+            name = '"%s"'%(self.client.nombres) if self.client else None
+            data = '{"total": %s, "documento": %s, "nombres": %s, "compras": %s}'%(self.total,doc, name, data)
+            return HttpResponse(data, content_type="application/json")
+        else:
+            return self.get(self.kwargs)
+
+    def get_context_data(self, **kwargs):
+        context = super(FacturaView, self).get_context_data()
+        context['results'] = self.results
+        context['total'] = self.total
+        context['client'] =  self.client
+        context['pdf'] = 'pdf' in self.request.GET
+        return context

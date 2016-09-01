@@ -1,0 +1,77 @@
+{%extends "base_layout.html"%}
+
+{%block content%}
+<div class='container'>
+    <div class='row'>
+        <div class='col-md-12'>
+            <h1>5. Facturas</h1>
+            <form id='facturaForm' method='POST' action='/facturas/'>
+                {%csrf_token%}
+                {{form.as_p}}
+                <button class='btn btn-primary'>Consultar</button>
+            </form>
+        </div>
+    </div>
+
+    {%if results%}
+    <table class='table table-striped'>
+        <thead>
+            <tr><th colspan='2'>Documento: {{client.documento}} </th><th colspan='2'>Nombres: {{client.nombres}} </th></tr>
+            <tr>
+                <th>ID producto</th><th>Producto</th>
+                <th>Sede</th><th>Precio</th>
+            </tr>
+        </thead>
+        <tbody>
+            {%for r in results%}
+                <tr>
+                    <td>{{r.producto.pk}}</td>
+                    <td>{{r.producto.producto}}</td>
+                    <td>{{r.sede.sede}}</td>
+                    <td>$ {{r.get_precio}}</td>
+                </tr>
+            {%endfor%}
+            <tr><td colspan='3'>Total precio</td> <td>$ {{total}}</td></tr>
+        </tbody>
+    </table>
+    <div class='btns-row'>
+        <button type='button' class='btn btn-success btn-export' data-x='pdf'>PDF</button>
+        <button type='button' class='btn btn-success btn-export' data-x='json'>JSON</button>
+    </div>
+    {%else%}
+        {% if messages %}
+            <ul class="messages">
+                {% for message in messages %}
+                    <li{% if message.tags %} class="alert-{{ message.tags }}"{% endif %}>{{ message|safe }}</li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+    {%endif%}
+</div>
+{%endblock%}
+
+
+{%block body_scripts%}
+    {{block.super}}
+    <script>
+        $(document).ready( function() {
+            $(".btn-export").click(
+                    function(){
+                        var format = $(this).attr('data-x');
+                        var form = $("#facturaForm")[0];
+
+                        //submit and then reset attrs
+                        form.target ='_blank';
+                        form.action = '/facturas/?'+format;
+                        form.submit();
+                        form.action = '/facturas/';
+                        form.target = '_self';
+                    }
+                    
+                    );
+            
+            //print if pdf
+            {%if pdf and results%}window.print();{%endif%}
+            });
+    </script>
+{%endblock%}

@@ -15,7 +15,7 @@ Including another URLconf
 """
 from django.conf.urls import url
 from django.contrib import admin
-from app.views import APIListCreate, ComprasView
+from app.views import APIListCreate, ComprasView, FacturaView
 from app.models import Clientes, Compras, Productos, Sedes
 
 urlpatterns = [
@@ -29,4 +29,5 @@ urlpatterns = [
     url(r'^api/sedes/$', APIListCreate.as_view(model=Sedes)),
     url(r'^api/sedes/(?P<pk>[0-9]{1,10})$', APIListCreate.as_view(model=Sedes) ),
     url(r'^compras/$', ComprasView.as_view()),
+    url(r'^facturas/$', FacturaView.as_view()),
 ]

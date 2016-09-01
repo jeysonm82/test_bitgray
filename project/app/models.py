@@ -52,12 +52,16 @@ class Compras(models.Model):
     producto = models.ForeignKey(
         Productos, db_column='id_producto', null=True, blank=True)
     sede = models.ForeignKey(Sedes, db_column='id_sede', null=True, blank=True)
-    precio = models.PositiveIntegerField()
+    precio = models.PositiveIntegerField(null=True, blank=True)
     descripcion = models.TextField(null=True, blank=True)
     fecha = models.DateTimeField(auto_now=True)
 
     def __unicode__(self):
         return "%s - %s, $%s. Sede: %s" % (self.producto.producto, self.cliente, self.precio, self.sede)
+
+    def get_precio(self):
+        # Get precio from self.producto if precio is null here
+        return self.precio if self.precio is not  None else self.producto.precio
 
     class Meta:
         managed = False
