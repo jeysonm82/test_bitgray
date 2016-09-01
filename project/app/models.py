@@ -25,7 +25,7 @@ class Productos(models.Model):
     descripcion = models.TextField(null=True, blank=True)
 
     def __unicode__(self):
-        return "%s. %s - $%s" % (self.pk, self.producto, self.precio)
+        return "%s. %s - $%s (Desc: %s)" % (self.pk, self.producto, self.precio, self.descripcion)
 
     class Meta:
         managed = False
@@ -70,7 +70,7 @@ class Compras(models.Model):
 
 
 class Log(models.Model):
-    fecha = models.DateTimeField()
+    fecha = models.DateTimeField(auto_now=True)
     descripcion = models.TextField()
 
     def __unicode__(self):
@@ -79,3 +79,30 @@ class Log(models.Model):
     class Meta:
         managed = False
         db_table = 'log'
+
+# Signals for logging of UPDATE/DELETE queries
+from django.db.models.signals import pre_save, post_delete
+from django.dispatch import receiver
+
+@receiver(pre_save, sender=Compras)
+@receiver(pre_save, sender=Clientes)
+@receiver(pre_save, sender=Productos)
+@receiver(pre_save, sender=Sedes)
+def signal_update(sender, **kwargs):
+    instance = kwargs['instance']
+    pre_instance = instance.__class__.objects.get(pk=instance.pk)
+    log_msg = "ACTION: UPDATE \n Instance id: %s \n previous value: %s \n new value: %s"%(instance.pk, pre_instance, instance)
+    log = Log()
+    log.descripcion = log_msg
+    log.save()
+    
+@receiver(post_delete, sender=Compras)
+@receiver(post_delete, sender=Clientes)
+@receiver(post_delete, sender=Productos)
+@receiver(post_delete, sender=Sedes)
+def signal_delete(sender, **kwargs):
+    instance = kwargs['instance']
+    log_msg = "ACTION: DELETE \n Instance id: %s \n previous value: %s"%(instance.pk, instance)
+    log = Log()
+    log.descripcion = log_msg
+    log.save()
