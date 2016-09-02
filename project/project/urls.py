@@ -15,7 +15,7 @@ Including another URLconf
 """
 from django.conf.urls import url
 from django.contrib import admin
-from app.views import APIListCreate, ComprasView, FacturaView
+from app.views import APIListCreate, ComprasView, FacturaView, SendReportView
 from app.models import Clientes, Compras, Productos, Sedes
 from django.views.generic import TemplateView
 
@@ -32,4 +32,5 @@ urlpatterns = [
     url(r'^api/sedes/(?P<pk>[0-9]{1,10})$', APIListCreate.as_view(model=Sedes) ),
     url(r'^compras/$', ComprasView.as_view()),
     url(r'^facturas/$', FacturaView.as_view()),
+    url(r'^enviar-reporte/$', SendReportView, name='sendreport'),
 ]
