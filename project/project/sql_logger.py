@@ -11,15 +11,18 @@ class SQLSelectHandler(logging.Handler):
     """
 
     def emit(self, record):
-        if 'SELECT' in record.sql:
-            db = MySQLdb.connect(host=env.MYSQL_HOST, user=env.MYSQL_USERNAME,
-                                 passwd=env.MYSQL_PASSWORD, db=env.MYSQL_DATABASE)
-            cursor = db.cursor()
-            dt = time.strftime('%Y-%m-%d %H:%M:%S')
-            try:
-                cursor.execute(
+        try:
+            if 'SELECT' in record.sql:
+                db = MySQLdb.connect(host=env.MYSQL_HOST, user=env.MYSQL_USERNAME,
+                                     passwd=env.MYSQL_PASSWORD, db=env.MYSQL_DATABASE)
+                cursor = db.cursor()
+                dt = time.strftime('%Y-%m-%d %H:%M:%S')
+                try:
+                    cursor.execute(
                         'INSERT INTO log (`fecha`, `descripcion`) VALUES ("%s","ACTION:SELECT \n %s")' % (dt, record.sql))
-            except:
-                pass
-            db.commit()
-            db.close()
+                    db.commit()
+                except:
+                    pass
+                db.close()
+        except:
+            pass
