@@ -1,31 +1,74 @@
 {%extends "base_layout.html"%}
 {%block content%}
 <div class='container'>
-    <h1>Practical Test - Jeyson Molina</h1>
+    <h1>Bitgray Practical Test - Jeyson Molina (Sept. 2016)</h1>
+    <h2>Instalación</h2>
+    (Demo corriendo en: <a href='http://45.55.138.14:9900/' target='_blank'>http://45.55.138.14:9900/</a>)
+    <ul>
+        <li>Prerrequisitos: Django (1.9), python MySQLdb, MySQL server </li>
+        <li>El proyecto django se encuentra en project/</li>
+        <li>Configurar entorno MySQL en env.py</li>
+        <li>Realizar migración: python migrate.py</li>
+        <li>Realizar migración de modelos Django: python manage.py makemigrations . python manage.py migrate</li>
+        <li>Crear superusuario: python manage.py createsuperuser</li>
+        <li>Iniciar: python manage.py runserver 8000</li>
+    </ul>
+
+    <h2>Soluciones</h2>
     <ol>
         
         <li>
-        <p></p>
+        <p>Crear y compartir un repositorio con esta prueba</p>
+        <a href='https://github.com/jeysonmc/test_bitgray' target='_blank'>https://github.com/jeysonmc/test_bitgray</a>
         </li>
         <li>
-        <p></p>
+        <p>Realizar la migración de dicha base de datos y realizar su respectivo CRUD para cada
+tabla</p>
+         Implementado en project/migrate.py para crear la DB y migrar los datos del archivo SQL.<br/>
+        <br/>Para los CRUDS se usa el ORM de Django, los modelos se definen en project/app/models.py
+        <br/>Los administradores que implementan una interfaz para el CRUD de cada modelo se definen  en project/app/admin.py
+        <br/> Para acceder a estos: <a href='/admin' target='_blank' class='btn btn-primary'>Administradores</a> (user: admin , pass: testbitgray o el superusuario definido )
         </li>
         <li>
-        <p></p>
+        <p>Crear el API necesaria para que otra aplicación pueda realizar transacciones.
+(Consultar y crear)</p>
+        API (tipo RESTful, retorna json) Implementada en project/app/views.py  APIListCreate . Es una vista genérica que se configura con un modelo (ver project/urls.py)<br/>
+        Ej API:<br/>
+        (Se recomienda instalar <a href='https://chrome.google.com/webstore/detail/jsonview/chklaanhfefbnpoihckbnefhakgolnmc' target='_blank'>jsonview</a> para Google chrome para visualizar)<br/>
+
+        - Listado de compras: <a class='btn btn-primary' href='/api/compras/' target='_blank'>/api/compras/</a><br/>
+        - Detalle de compra: <a class='btn btn-primary' href='/api/compras/19' target='_blank'>/api/compras/19/</a><br/>
+        - Crear compra: <code>curl --data "precio=5000&cliente=1&producto=1" localhost:8000/api/compras/</code> (usando POST request, cambiar localhost:8000 por URL del servidor)
+
+        <br/> Otras entradas: /api/clientes/, /api/productos/, /api/sedes/
         </li>
         <li>
-        <p></p>
+        <p>Crear una interfaz para realizar compras</p>
+        Implementado en project/app/views.py (ComprasView) y la lógica front-end en project/app/templates/compras.html <br/>
+        <a class='btn btn-primary' href='{%url 'compras'%}' target='_blank'>Interfaz compras</a>
         </li>
         <li>
-        <p></p>
+        <p>Crear un pequeño formulario donde se escriba el documento del cliente y traer en
+forma de factura sus compras</p>
+        Implementado en app/views.py(FacturaView) y la logica front-end en  project/app/templates/factura.html<br/>
+        <a class='btn btn-primary' href='{%url 'facturas'%}' target='_blank'>Interfaz facturas</a>
         </li>
         <li>
-        <p></p>
+        <p>Cada vez que se realice select, update o delete; se debe ingresar el registro en la
+tabla log, describiendo el tipo de movimiento y algún dato que crea necesario o de
+gran ayuda para una bitácora</p>
+        Implementado el log de transacciones SELECT en project/project/sql_logger.py
+        Y el UPDATE, DELETE, INSERT de los modelos usando django signals en project/app/models.py (signal_update, signal_delete)
+        <br/>
+        - Para acciones UPDATE se almacena el valor anterior y nuevo de la fila alterada.<br/>
+        - Para acciones DELETE se almacena el valor de la fila eliminada.
+        <br/>
+        <a class='btn btn-primary' href='/admin/app/log/' target='_blank'>Ver logs</a>
+
         </li>
         <li>
         <p>Bajo la estructura de negocio actual, ¿Que propondría usted para realizar una
 numeración en la facturación, sin afectar o crear nuevos campos?</p>
-        <p>
         <code>
             CODIGO = [fechaAño+fechaMes+fechaDia+fechaHora+fechaMinuto+fechaSegundo+id_sede+id_producto+id_cliente]
         </code><br/>
@@ -36,7 +79,6 @@ numeración en la facturación, sin afectar o crear nuevos campos?</p>
             id_cliente: 3<br/>
 
             Codigo: 201501011200123
-            </p>
         </li>
         <li>
         <p>Plantear herramientas y tecnologías necesarias para su publicación, seguridad y
@@ -93,5 +135,6 @@ contenga los siguientes cálculos...</p>
         <a class='btn btn-primary' href='{%url 'sendreport'%}' target='_blank'>Enviar reporte de prueba</a>
         </li>
 </ol>
+Contacto: Jeyson Molina - jeyson.mco@gmail.com
 </div>
 {%endblock%}

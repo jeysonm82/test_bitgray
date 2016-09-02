@@ -30,7 +30,7 @@ urlpatterns = [
     url(r'^api/productos/(?P<pk>[0-9]{1,10})$', APIListCreate.as_view(model=Productos) ),
     url(r'^api/sedes/$', APIListCreate.as_view(model=Sedes)),
     url(r'^api/sedes/(?P<pk>[0-9]{1,10})$', APIListCreate.as_view(model=Sedes) ),
-    url(r'^compras/$', ComprasView.as_view()),
-    url(r'^facturas/$', FacturaView.as_view()),
+    url(r'^compras/$', ComprasView.as_view(), name='compras'),
+    url(r'^facturas/$', FacturaView.as_view(), name='facturas'),
     url(r'^enviar-reporte/$', SendReportView, name='sendreport'),
 ]

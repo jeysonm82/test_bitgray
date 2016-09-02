@@ -51,8 +51,8 @@ class APIListCreate(View):
         post_data = self.request.POST
         model = self.get_model()
 
+        instance = model()
         for k, v in post_data.iteritems():
-            instance = model()
             attr = model._meta.get_field(k)
 
             # If field is a foreignkey we need to get the related model
@@ -61,6 +61,7 @@ class APIListCreate(View):
                 foreign_model = attr.rel.to  # Model class
                 v = foreign_model.objects.get(pk=v)
             setattr(instance, k, v)
+
         instance.save()
 
         data = self._to_json([instance])

@@ -90,8 +90,12 @@ from django.dispatch import receiver
 @receiver(pre_save, sender=Sedes)
 def signal_update(sender, **kwargs):
     instance = kwargs['instance']
-    pre_instance = instance.__class__.objects.get(pk=instance.pk)
-    log_msg = "ACTION: UPDATE \n Instance id: %s \n previous value: %s \n new value: %s"%(instance.pk, pre_instance, instance)
+    try:
+        pre_instance = instance.__class__.objects.get(pk=instance.pk)
+    except:
+        pre_instance = None
+    action = 'UPDATE' if pre_instance is not None else 'CREATE'
+    log_msg = "ACTION: %s \n Instance id: %s \n previous value: %s \n new value: %s"%(action, instance.pk, pre_instance, instance)
     log = Log()
     log.descripcion = log_msg
     log.save()
