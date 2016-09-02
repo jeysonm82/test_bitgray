@@ -10,6 +10,7 @@ from models import Productos, Compras, Sedes, Clientes
 from django import forms
 from django.forms import modelformset_factory
 from django.contrib import messages
+from weekly_report import send_report
 
 
 class APIListCreate(View):
@@ -132,3 +133,8 @@ class FacturaView(FormView):
         context['client'] =  self.client
         context['pdf'] = 'pdf' in self.request.GET
         return context
+
+
+def SendReportView(request):
+    report = send_report()
+    return HttpResponse(report.replace('\n','<br/>'))
