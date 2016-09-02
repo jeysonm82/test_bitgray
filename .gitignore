@@ -12,7 +12,6 @@ db.sqlite3*
 node_modules/*
 vendors.js
 bundle.js
-styles.css
 styles.css.map
 whoosh_index
 whoosh_index/*
